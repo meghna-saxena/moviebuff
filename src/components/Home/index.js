@@ -1,4 +1,10 @@
 import React from 'react';
+import HeroImage from '../elements/HeroImage';
+import SearchBar from '../elements/SearchBar';
+import FourColGrid from '../elements/FourColGrid';
+import MovieThumb from '../elements/MovieThumb'
+import LoadMoreBtn from '../elements/LoadMoreBtn';
+import Spinner from '../elements/Spinner';
 import './Home.css';
 
 class Home extends React.Component {
@@ -8,7 +14,13 @@ class Home extends React.Component {
 
     render() {
         return (
-           <div>Home</div> 
+            <div className="rmdb-home">
+                <HeroImage />
+                <SearchBar />
+                <FourColGrid />
+                <Spinner />
+                <LoadMoreBtn />
+            </div>
         )
     }
 }
