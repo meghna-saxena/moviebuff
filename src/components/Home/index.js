@@ -1,4 +1,5 @@
 import React from 'react';
+import * as config from '../../config';
 import HeroImage from '../elements/HeroImage';
 import SearchBar from '../elements/SearchBar';
 import FourColGrid from '../elements/FourColGrid';
@@ -9,7 +10,33 @@ import './Home.css';
 
 class Home extends React.Component {
     state = {
+        movies: [],
+        heroImage: null,
+        loading: false,
+        currentPage: 0,
+        totalPages: 0,
+        searchTerm: ''
+    }
 
+    componentDidMount() {
+        this.setState({ loading: true });
+
+        const endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=1`;
+        this.fetchItems(endpoint);
+    }
+
+    fetchItems = (endpoint) => {
+        fetch(endpoint)
+        .then(result => result.json()) //convert to json since its raw data
+        .then(result => {
+            this.setState({
+                movies: [...this.state.movies, ...result.results],
+                heroImage: this.state.heroImage || result.results[0],
+                loading: false,
+                currentPage: result.page,
+                totalPages: result.total_pages
+            })
+        })
     }
 
     render() {
