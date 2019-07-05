@@ -27,16 +27,31 @@ class Home extends React.Component {
 
     fetchItems = (endpoint) => {
         fetch(endpoint)
-        .then(result => result.json()) //convert to json since its raw data
-        .then(result => {
-            this.setState({
-                movies: [...this.state.movies, ...result.results],
-                heroImage: this.state.heroImage || result.results[0],
-                loading: false,
-                currentPage: result.page,
-                totalPages: result.total_pages
+            .then(result => result.json()) //convert to json since its raw data
+            .then(result => {
+                this.setState({
+                    movies: [...this.state.movies, ...result.results],
+                    heroImage: this.state.heroImage || result.results[0],
+                    loading: false,
+                    currentPage: result.page,
+                    totalPages: result.total_pages
+                })
             })
-        })
+    }
+
+    loadMoreItems = () => {
+        let endpoint = '';
+        this.setState({ loading: true });
+
+        if (this.state.searchTerm === '') {
+            // fetch popular movies if no search term
+            endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=${this.state.currentPage + 1}`;
+        } else {
+             // fetch the searched term movies
+            endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query${this.state.searchTerm}&page=${this.state.currentPage + 1}`;
+        }
+
+        this.fetchItems(endpoint)
     }
 
     render() {
