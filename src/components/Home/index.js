@@ -39,6 +39,23 @@ class Home extends React.Component {
             })
     }
 
+    searchItems = (searchTerm) => {
+        let endpoint = '';
+        this.setState({
+            movies: [], // clear the old list of movies since now we need new movie which we searched for
+            loading: true,
+            searchTerm: searchTerm
+        })
+
+        if (searchTerm === '') {
+            endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=1`;
+        } else {
+            endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query${searchTerm}`;
+        }
+
+        this.fetchItems(endpoint);
+    }
+
     loadMoreItems = () => {
         let endpoint = '';
         this.setState({ loading: true });
@@ -51,7 +68,7 @@ class Home extends React.Component {
             endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query${this.state.searchTerm}&page=${this.state.currentPage + 1}`;
         }
 
-        this.fetchItems(endpoint)
+        this.fetchItems(endpoint);
     }
 
     render() {
