@@ -40,6 +40,7 @@ class Home extends React.Component {
     }
 
     searchItems = (searchTerm) => {
+        console.log(searchTerm)
         let endpoint = '';
         this.setState({
             movies: [], // clear the old list of movies since now we need new movie which we searched for
@@ -81,7 +82,7 @@ class Home extends React.Component {
                             title={this.state.heroImage.original_title}
                             text={this.state.heroImage.overview}
                         />
-                        <SearchBar />
+                        <SearchBar search={this.searchItems} />
                     </div>
                     : null}
                 <FourColGrid />
