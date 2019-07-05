@@ -3,9 +3,9 @@ import './MovieThumb.css';
 
 const MovieThumb = (props) => {
     return (
-        <div>
-            MovieThumb
-            </div>
+        <div className="rmdb-moviethumb">
+            <img src={props.image} alt="moviethumb" />
+        </div>
     )
 }
 

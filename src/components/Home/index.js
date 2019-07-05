@@ -51,7 +51,7 @@ class Home extends React.Component {
         if (searchTerm === '') {
             endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=1`;
         } else {
-            endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query${searchTerm}`;
+            endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query=${searchTerm}`;
         }
 
         this.fetchItems(endpoint);
@@ -73,21 +73,40 @@ class Home extends React.Component {
     }
 
     render() {
+        const { movies, heroImage, loading, currentPage, totalPages, searchTerm } = this.state;
+
         return (
             <div className="rmdb-home">
-                {this.state.heroImage
-                    ? <div>
+                {heroImage ?
+                    <div>
                         <HeroImage
-                            image={`${config.IMAGE_BASE_URL}${config.BACKDROP_SIZE}/${this.state.heroImage.backdrop_path}`}
-                            title={this.state.heroImage.original_title}
-                            text={this.state.heroImage.overview}
+                            image={`${config.IMAGE_BASE_URL}${config.BACKDROP_SIZE}${heroImage.backdrop_path}`}
+                            title={heroImage.original_title}
+                            text={heroImage.overview}
                         />
                         <SearchBar search={this.searchItems} />
-                    </div>
-                    : null}
-                <FourColGrid />
-                <Spinner />
-                <LoadMoreBtn />
+                    </div> : null}
+                <div className="rmdb-home-grid">
+                    <FourColGrid
+                        header={searchTerm ? 'Search Result' : 'Popular Movies'}
+                        loading={loading}
+                    >
+                        {movies.map((element, i) => (
+                            <MovieThumb
+                                key={i}
+                                clickable={true}
+                                image={element.poster_path ? `${config.IMAGE_BASE_URL}${config.POSTER_SIZE}${element.poster_path}` : './images/no_image.jpg'}
+                                movieId={element.id}
+                                movieName={element.original_title}
+                            />
+                        ))}
+                    </FourColGrid>
+                    {loading ? <Spinner /> : null}
+                    {(currentPage <= totalPages && !loading) ?
+                        <LoadMoreBtn text="Load More" onClick={this.loadMoreItems} />
+                        : null
+                    }
+                </div>
             </div>
         )
     }
