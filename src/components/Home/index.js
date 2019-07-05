@@ -47,7 +47,7 @@ class Home extends React.Component {
             // fetch popular movies if no search term
             endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=${this.state.currentPage + 1}`;
         } else {
-             // fetch the searched term movies
+            // fetch the searched term movies
             endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query${this.state.searchTerm}&page=${this.state.currentPage + 1}`;
         }
 
@@ -57,8 +57,16 @@ class Home extends React.Component {
     render() {
         return (
             <div className="rmdb-home">
-                <HeroImage />
-                <SearchBar />
+                {this.state.heroImage
+                    ? <div>
+                        <HeroImage
+                            image={`${config.IMAGE_BASE_URL}${config.BACKDROP_SIZE}/${this.state.heroImage.backdrop_path}`}
+                            title={this.state.heroImage.original_title}
+                            text={this.state.heroImage.overview}
+                        />
+                        <SearchBar />
+                    </div>
+                    : null}
                 <FourColGrid />
                 <Spinner />
                 <LoadMoreBtn />
