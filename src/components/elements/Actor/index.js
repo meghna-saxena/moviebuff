@@ -6,7 +6,7 @@ const Actor = (props) => {
     const POSTER_SIZE = 'w154';
     
     const actorImage = props.actor.profile_path
-        ? `${config.IMAGE_BASE_URL}${config.POSTER_SIZE}${props.actor.profile_path}`
+        ? `${config.IMAGE_BASE_URL}${POSTER_SIZE}${props.actor.profile_path}`
         : './images/no_image.jpg';
 
     return (

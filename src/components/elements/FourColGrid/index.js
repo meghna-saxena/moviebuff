@@ -1,9 +1,10 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import './FourColGrid.css';
 
 const FourColGrid = ({ header, loading, children }) => {
   const renderElements = () => {
-    const gridElements = children.map( (element, i) => (
+    const gridElements = children.map((element, i) => (
       <div key={i} className="rmdb-grid-element">
         {element}
       </div>
@@ -15,10 +16,15 @@ const FourColGrid = ({ header, loading, children }) => {
     <div className="rmdb-grid">
       {header && !loading ? <h1>{header}</h1> : null}
       <div className="rmdb-grid-content">
-         {renderElements()}
+        {renderElements()}
       </div>
     </div>
   )
+}
+
+FourColGrid.propTypes = {
+  header: PropTypes.string.isRequired,
+  loading: PropTypes.bool
 }
 
 export default FourColGrid;

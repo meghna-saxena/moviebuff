@@ -29,7 +29,6 @@ class Movie extends React.Component {
         fetch(endpoint)
             .then(result => result.json()) //convert to json since its raw data
             .then(result => {
-                console.log('result', result);
                 if (result.status_code) { // means movie is not found
                     this.setState({ loading: false })
                 } else {
