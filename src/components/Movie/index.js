@@ -35,19 +35,19 @@ class Movie extends React.Component {
                 } else {
                     this.setState({ movie: result }, () => {
                         // after movie is fetched; fetch actors in setState callback function
-                        const endpoint = `${config.API_URL}movie/${this.props.match.params.movieId}/credits?api_key=${config.API_KEY}`;    
+                        const endpoint = `${config.API_URL}movie/${this.props.match.params.movieId}/credits?api_key=${config.API_KEY}`;
 
                         fetch(endpoint)
-                        .then(result => result.json())
-                        .then(result => {
-                            const directors = result.crew.filter(member => member.job === "Director");
+                            .then(result => result.json())
+                            .then(result => {
+                                const directors = result.crew.filter(member => member.job === "Director");
 
-                            this.setState({
-                                actors: result.cast,            
-                                directors: directors,
-                                loading: false
+                                this.setState({
+                                    actors: result.cast,
+                                    directors: directors,
+                                    loading: false
+                                })
                             })
-                        })
                     })
                 }
             })
@@ -55,13 +55,35 @@ class Movie extends React.Component {
     }
 
     render() {
+        const { movie, loading, directors, actors } = this.state;
+        const { movieName } = this.props.location;
+
+        const actorProfile = actors && actors.map((element, i) => {
+            return <Actor key={i} actor={element} />
+        })
+
         return (
-            <div className="rmdb-movie">
-                <Navigation />
-                <MovieInfo />
-                <MovieInfoBar />
-                <FourColGrid />
-                <Spinner />
+            <div className="rmdb-movie" >
+                {movie ?
+                    <div>
+                        <Navigation movie={movieName} />
+                        <MovieInfo movie={movie} directors={directors} />
+                        <MovieInfoBar
+                            time={movie.runtime}
+                            budget={movie.budget}
+                            revenue={movie.revenue}
+                        />
+                    </div>
+                    : null}
+                {actors ?
+                    <div className="rmdb-movie-grid">
+                        <FourColGrid header={'Actors'}>
+                            {actorProfile}
+                        </FourColGrid>
+                    </div>
+                    : null}
+                {!actors && !loading ? <h1>No Movie Found</h1> : null}
+                {loading ? <Spinner /> : null}
             </div>
         )
     }
