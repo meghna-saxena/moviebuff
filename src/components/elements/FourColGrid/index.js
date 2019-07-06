@@ -1,8 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import './FourColGrid.css';
 
 const FourColGrid = ({ header, loading, children }) => {
-
   const renderElements = () => {
     const gridElements = children.map( (element, i) => (
       <div key={i} className="rmdb-grid-element">

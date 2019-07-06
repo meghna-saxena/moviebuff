@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import * as config from '../../config';
 import HeroImage from '../elements/HeroImage';
 import SearchBar from '../elements/SearchBar';
