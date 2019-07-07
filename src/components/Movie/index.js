@@ -31,35 +31,37 @@ class Movie extends React.Component {
         }
     }
 
-    fetchItems = (endpoint) => {
-        fetch(endpoint)
-            .then(result => result.json()) //convert to json since its raw data
-            .then(result => {
-                if (result.status_code) { // means movie is not found
-                    this.setState({ loading: false })
-                } else {
-                    this.setState({ movie: result }, () => {
-                        // after movie is fetched; fetch actors in setState callback function
-                        const endpoint = `${config.API_URL}movie/${this.props.match.params.movieId}/credits?api_key=${config.API_KEY}`;
+    fetchItems = async (endpoint) => {
+        const { movieId } = this.props.match.params;
 
-                        fetch(endpoint)
-                            .then(result => result.json())
-                            .then(result => {
-                                const directors = result.crew.filter(member => member.job === "Director");
+        try {
+            const result = await (await fetch(endpoint)).json();
 
-                                this.setState({
-                                    actors: result.cast,
-                                    directors: directors,
-                                    loading: false
-                                }, () => {
-                                    localStorage.setItem(`${this.props.match.params.movieId}`, JSON.stringify(this.state));
-                                })
-                            })
-                    })
-                }
-            })
-            .catch(error => console.error('Error:', error))
+            if (result.status_code) { // means movie is not found
+                this.setState({ loading: false });
+            } else {
+                this.setState({ movie: result });
+                // after movie is fetched; fetch actors in setState callback function
+                const creditsEndpoint = `${config.API_URL}movie/${this.props.match.params.movieId}/credits?api_key=${config.API_KEY}`;
+
+                const creditsResult = await (await fetch(creditsEndpoint)).json();
+                const directors = creditsResult.crew.filter(member => member.job === "Director");
+
+                this.setState({
+                    actors: creditsResult.cast,
+                    directors: directors,
+                    loading: false
+                }, () => {
+                    localStorage.setItem(`${this.props.match.params.movieId}`, JSON.stringify(this.state));
+                });
+
+            }
+        }
+        catch (error) {
+            console.error("Error:", error);
+        }
     }
+
 
     render() {
         const { movie, loading, directors, actors } = this.state;

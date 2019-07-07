@@ -31,27 +31,57 @@ class Home extends React.Component {
         }
     }
 
-    fetchItems = (endpoint) => {
-        fetch(endpoint)
-            .then(result => result.json()) //convert to json since its raw data
-            .then(result => {
-                if (result.results.length >= 1) {
-                    this.setState({
-                        movies: [...this.state.movies, ...result.results],
-                        heroImage: this.state.heroImage || result.results[0],
-                        loading: false,
-                        currentPage: result.page,
-                        totalPages: result.total_pages
-                    }, () => {
-                        if (this.state.searchTerm === '') {
-                            localStorage.setItem('HomeState', JSON.stringify(this.state));
-                        }
-                    })
-                } else {
-                    this.setState({loading: false});  
-                }
-            })
+    fetchItems = async (endpoint) => {
+        const { movies, heroImage, searchTerm } = this.state;
+
+        const result = await (await fetch(endpoint)).json();
+
+        try {
+            if (result.results.length >= 1) {
+                this.setState({
+                    movies: [...movies, ...result.results],
+                    heroImage: heroImage || result.results[0],
+                    loading: false,
+                    currentPage: result.page,
+                    totalPages: result.total_pages
+                }, () => {
+                    if (searchTerm === '') {
+                        localStorage.setItem('HomeState', JSON.stringify(this.state));
+                    }
+                })
+            } else {
+                this.setState({ loading: false });
+            }
+        }
+        catch (error) {
+            console.error('Error:', error);
+        }
     }
+
+    // fetchItems = (endpoint) => {
+    //     const { movies, heroImage, searchTerm } = this.state;
+
+    //     fetch(endpoint)
+    //         .then(result => result.json()) //convert to json since its raw data
+    //         .then(result => {
+    //             if (result.results.length >= 1) {
+    //                 this.setState({
+    //                     movies: [...movies, ...result.results],
+    //                     heroImage: heroImage || result.results[0],
+    //                     loading: false,
+    //                     currentPage: result.page,
+    //                     totalPages: result.total_pages
+    //                 }, () => {
+    //                     if (searchTerm === '') {
+    //                         localStorage.setItem('HomeState', JSON.stringify(this.state));
+    //                     }
+    //                 })
+    //             } else {
+    //                 this.setState({ loading: false });
+    //             }
+    //         })
+    //         .catch(error => console.error("Error:", error));
+    // }
 
     searchItems = (searchTerm) => {
         let endpoint = '';
@@ -115,7 +145,7 @@ class Home extends React.Component {
                         ))}
                     </FourColGrid>
                     {loading ? <Spinner /> : null}
-                    {(currentPage <= totalPages && !loading && movies.length >= 1 ) ?
+                    {(currentPage <= totalPages && !loading && movies.length >= 1) ?
                         <LoadMoreBtn text="Load More" onClick={this.loadMoreItems} />
                         : <h1>No Movies Found</h1>
                     }
