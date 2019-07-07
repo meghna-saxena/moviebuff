@@ -19,10 +19,16 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({ loading: true });
+        if (localStorage.getItem('HomeState')) {
+            const state = JSON.parse(localStorage.getItem('HomeState'));
+            this.setState({ ...state });
+        } else {
+            this.setState({ loading: true });
 
-        const endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=1`;
-        this.fetchItems(endpoint);
+            const endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=1`;
+
+            this.fetchItems(endpoint);
+        }
     }
 
     fetchItems = (endpoint) => {
@@ -35,6 +41,10 @@ class Home extends React.Component {
                     loading: false,
                     currentPage: result.page,
                     totalPages: result.total_pages
+                }, () => {
+                    if (this.state.searchTerm === '') {
+                        localStorage.setItem('HomeState', JSON.stringify(this.state));
+                    }
                 })
             })
     }

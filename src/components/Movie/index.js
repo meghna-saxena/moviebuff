@@ -17,12 +17,18 @@ class Movie extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({ loading: true });
+        if (localStorage.getItem(`${this.props.match.params.movieId}`)) {
+            const state = JSON.parse(localStorage.getItem(`${this.props.match.params.movieId}`));
 
-        // fetch movie
-        const endpoint = `${config.API_URL}movie/${this.props.match.params.movieId}?api_key=${config.API_KEY}&language=en-US`;
+            this.setState({ ...state });
+        } else {
+            this.setState({ loading: true });
 
-        this.fetchItems(endpoint)
+            // fetch movie
+            const endpoint = `${config.API_URL}movie/${this.props.match.params.movieId}?api_key=${config.API_KEY}&language=en-US`;
+
+            this.fetchItems(endpoint)
+        }
     }
 
     fetchItems = (endpoint) => {
@@ -45,6 +51,8 @@ class Movie extends React.Component {
                                     actors: result.cast,
                                     directors: directors,
                                     loading: false
+                                }, () => {
+                                    localStorage.setItem(`${this.props.match.params.movieId}`, JSON.stringify(this.state));
                                 })
                             })
                     })
