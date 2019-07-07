@@ -35,17 +35,21 @@ class Home extends React.Component {
         fetch(endpoint)
             .then(result => result.json()) //convert to json since its raw data
             .then(result => {
-                this.setState({
-                    movies: [...this.state.movies, ...result.results],
-                    heroImage: this.state.heroImage || result.results[0],
-                    loading: false,
-                    currentPage: result.page,
-                    totalPages: result.total_pages
-                }, () => {
-                    if (this.state.searchTerm === '') {
-                        localStorage.setItem('HomeState', JSON.stringify(this.state));
-                    }
-                })
+                if (result.results.length >= 1) {
+                    this.setState({
+                        movies: [...this.state.movies, ...result.results],
+                        heroImage: this.state.heroImage || result.results[0],
+                        loading: false,
+                        currentPage: result.page,
+                        totalPages: result.total_pages
+                    }, () => {
+                        if (this.state.searchTerm === '') {
+                            localStorage.setItem('HomeState', JSON.stringify(this.state));
+                        }
+                    })
+                } else {
+                    this.setState({loading: false});  
+                }
             })
     }
 
@@ -111,9 +115,9 @@ class Home extends React.Component {
                         ))}
                     </FourColGrid>
                     {loading ? <Spinner /> : null}
-                    {(currentPage <= totalPages && !loading) ?
+                    {(currentPage <= totalPages && !loading && movies.length >= 1 ) ?
                         <LoadMoreBtn text="Load More" onClick={this.loadMoreItems} />
-                        : null
+                        : <h1>No Movies Found</h1>
                     }
                 </div>
             </div>

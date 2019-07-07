@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './Header.css';
 
 const Header = () => {
+    console.log('here');
     return (
         <div className="rmdb-header">
             <div className="rmdb-header-content">
