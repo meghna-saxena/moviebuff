@@ -25,6 +25,8 @@ class Home extends React.Component {
         } else {
             this.setState({ loading: true });
 
+            // const popularMovieEndpoint = this.createEndpoint("movie/popular");
+            // popularMovieEndpoint(false)("")
             this.fetchItems(this.createEndpoint("movie/popular", false, ""));
         }
     }
@@ -90,7 +92,15 @@ class Home extends React.Component {
     //     }
     // }
 
-    createEndpoint = type => loadMore => searchTerm => {
+    // createEndpoint = (type, loadMore, searchTerm) => {
+    //     const { currentPage } = this.state;
+
+    //     return `${config.API_URL}${type}?api_key=${config.API_KEY}&language=en-US&
+    //             page=${loadMore && currentPage + 1}&query=${searchTerm}`;
+    // }
+
+    createEndpoint = (type, loadMore, searchTerm) => {
+        console.log('inside funcc', type, loadMore, searchTerm);
         const { currentPage } = this.state;
 
         return `${config.API_URL}${type}?api_key=${config.API_KEY}&language=en-US&
@@ -98,8 +108,8 @@ class Home extends React.Component {
     }
 
     updateItems = (loadMore, searchTerm) => {
-        const searchedMovieEndpoint = this.createEndpoint("search/movie");
-        const popularMovieEndpoint = this.createEndpoint("movie/popular");
+        // const searchedMovieEndpoint = this.createEndpoint("search/movie");
+        // const popularMovieEndpoint = this.createEndpoint("movie/popular");
 
         this.setState({
             movies: loadMore ? [...this.state.movies] : [],
@@ -108,8 +118,8 @@ class Home extends React.Component {
         }, () => {
             this.fetchItems(
                 !this.state.searchTerm
-                    ? popularMovieEndpoint(loadMore)("")
-                    : searchedMovieEndpoint(loadMore)(this.state.searchTerm)
+                    ? this.createEndpoint("movie/popular", loadMore, "")
+                    : this.createEndpoint("search/movie", loadMore, this.state.searchTerm)
             );
         })
     }

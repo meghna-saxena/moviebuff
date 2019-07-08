@@ -11,7 +11,7 @@ const FourColGrid = ({ header, loading, children }) => {
     ))
     return gridElements;
   }
-
+  
   return (
     <div className="rmdb-grid">
       {header && !loading ? <h1>{header}</h1> : null}
