@@ -2,6 +2,7 @@ import * as React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Header from '../elements/Header';
 import Home from '../Home';
+// import HomeHooks from '../Home/Home-hooks';
 import Movie from '../Movie';
 import NotFound from '../elements/NotFound';
 
