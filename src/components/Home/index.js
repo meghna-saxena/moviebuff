@@ -25,9 +25,7 @@ class Home extends React.Component {
         } else {
             this.setState({ loading: true });
 
-            const endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=1`;
-
-            this.fetchItems(endpoint);
+            this.fetchItems(this.createEndpoint("movie/popular", false, ""));
         }
     }
 
@@ -83,55 +81,100 @@ class Home extends React.Component {
     //         .catch(error => console.error("Error:", error));
     // }
 
-    searchItems = (searchTerm) => {
-        let endpoint = '';
-        this.setState({
-            movies: [], // clear the old list of movies since now we need new movie which we searched for
-            loading: true,
-            searchTerm: searchTerm
-        })
+    // curry method
+    // createEndpoint = type => {
+    //     return loadMore => {
+    //         return searchTerm => {
+    //             ...
+    //         }
+    //     }
+    // }
 
-        if (searchTerm === '') {
-            endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=1`;
-        } else {
-            endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query=${searchTerm}`;
-        }
+    createEndpoint = type => loadMore => searchTerm => {
+        const { currentPage } = this.state;
 
-        this.fetchItems(endpoint);
+        return `${config.API_URL}${type}?api_key=${config.API_KEY}&language=en-US&
+                page=${loadMore && currentPage + 1}&query=${searchTerm}`;
     }
 
-    loadMoreItems = () => {
-        let endpoint = '';
-        this.setState({ loading: true });
+    updateItems = (loadMore, searchTerm) => {
+        const searchedMovieEndpoint = this.createEndpoint("search/movie");
+        const popularMovieEndpoint = this.createEndpoint("movie/popular");
 
-        if (this.state.searchTerm === '') {
-            // fetch popular movies if no search term
-            endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=${this.state.currentPage + 1}`;
+        this.setState({
+            movies: loadMore ? [...this.state.movies] : [],
+            loading: true,
+            searchTerm: loadMore ? this.state.searchTerm : searchTerm
+        }, () => {
+            this.fetchItems(
+                !this.state.searchTerm
+                    ? popularMovieEndpoint(loadMore)("")
+                    : searchedMovieEndpoint(loadMore)(this.state.searchTerm)
+            );
+        })
+    }
+
+    // searchItems = (searchTerm) => {
+    //     let endpoint = '';
+    //     this.setState({
+    //         movies: [], // clear the old list of movies since now we need new movie which we searched for
+    //         loading: true,
+    //         searchTerm: searchTerm
+    //     })
+
+    //     if (searchTerm === '') {
+    //         endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=1`;
+    //     } else {
+    //         endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query=${searchTerm}`;
+    //     }
+
+    //     this.fetchItems(endpoint);
+    // }
+
+    // loadMoreItems = () => {
+    //     let endpoint = '';
+    //     this.setState({ loading: true });
+
+    //     if (this.state.searchTerm === '') {
+    //         // fetch popular movies if no search term
+    //         endpoint = `${config.API_URL}movie/popular?api_key=${config.API_KEY}&language=en-US&page=${this.state.currentPage + 1}`;
+    //     } else {
+    //         // fetch the searched term movies
+    //         endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query${this.state.searchTerm}&page=${this.state.currentPage + 1}`;
+    //     }
+
+    //     this.fetchItems(endpoint);
+    // }
+
+    getHeaderText = () => {
+        const { movies, searchTerm } = this.state;
+
+        if (searchTerm && movies.length >= 1) {
+            return 'Search Result'
+        } else if (searchTerm) {
+            return 'No movie found'
         } else {
-            // fetch the searched term movies
-            endpoint = `${config.API_URL}search/movie?api_key=${config.API_KEY}&language=en-US&query${this.state.searchTerm}&page=${this.state.currentPage + 1}`;
+            return 'Popular Movies'
         }
-
-        this.fetchItems(endpoint);
     }
 
     render() {
         const { movies, heroImage, loading, currentPage, totalPages, searchTerm } = this.state;
 
         return (
-            <div className="rmdb-home">
-                {heroImage ?
+            <div className="rmdb-home" >
+                {heroImage && !searchTerm ?
                     <div>
                         <HeroImage
                             image={`${config.IMAGE_BASE_URL}${config.BACKDROP_SIZE}${heroImage.backdrop_path}`}
                             title={heroImage.original_title}
                             text={heroImage.overview}
                         />
-                        <SearchBar search={this.searchItems} />
                     </div> : null}
+                <SearchBar search={this.updateItems} />
                 <div className="rmdb-home-grid">
                     <FourColGrid
-                        header={searchTerm ? 'Search Result' : 'Popular Movies'}
+                        header={this.getHeaderText()}
                         loading={loading}
                     >
                         {movies.map((element, i) => (
@@ -145,12 +188,12 @@ class Home extends React.Component {
                         ))}
                     </FourColGrid>
                     {loading ? <Spinner /> : null}
-                    {(currentPage <= totalPages && !loading && movies.length >= 1) ?
-                        <LoadMoreBtn text="Load More" onClick={this.loadMoreItems} />
-                        : <h1>No Movies Found</h1>
+                    {(currentPage < totalPages && !loading && movies.length >= 1) ?
+                        <LoadMoreBtn text="Load More" onClick={this.updateItems} />
+                        : null
                     }
                 </div>
-            </div>
+            </div >
         )
     }
 }

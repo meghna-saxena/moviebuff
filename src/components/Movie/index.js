@@ -42,7 +42,7 @@ class Movie extends React.Component {
             } else {
                 this.setState({ movie: result });
                 // after movie is fetched; fetch actors in setState callback function
-                const creditsEndpoint = `${config.API_URL}movie/${this.props.match.params.movieId}/credits?api_key=${config.API_KEY}`;
+                const creditsEndpoint = `${config.API_URL}movie/${movieId}/credits?api_key=${config.API_KEY}`;
 
                 const creditsResult = await (await fetch(creditsEndpoint)).json();
                 const directors = creditsResult.crew.filter(member => member.job === "Director");
@@ -52,7 +52,7 @@ class Movie extends React.Component {
                     directors: directors,
                     loading: false
                 }, () => {
-                    localStorage.setItem(`${this.props.match.params.movieId}`, JSON.stringify(this.state));
+                    localStorage.setItem(`${movieId}`, JSON.stringify(this.state));
                 });
 
             }
